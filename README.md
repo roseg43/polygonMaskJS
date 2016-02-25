@@ -1,3 +1,4 @@
+![polygonMaskJS](https://cloud.githubusercontent.com/assets/7225212/13324938/c534e776-dbad-11e5-8e9d-50c3b43b51da.jpg)
 # polygonMaskJS
 
 ##Overview
