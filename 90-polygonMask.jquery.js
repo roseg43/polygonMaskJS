@@ -39,11 +39,22 @@ function createMask(el, direction) {
       /**
       	* Firefox automatically attaches SVG clip paths to the top of the parent element while Chrome attaches it to the window.
         * To fix this, we're going to check if the user is using Firefox, and set the top offset to zero if they are.
+        * 
        **/
       var isFirefox = typeof InstallTrigger !== 'undefined';
-      if (isFirefox) {
+        
+        // Newer versions of chrome work the same way as firefox. < Chrome 53 positions SVGs at the window top vs the element top.
+        var chromeVersion = (function() {      
+            var raw = navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
+            return raw ? parseInt(raw[2], 10) : false;
+        })();
+    if (isFirefox || chromeVersion > 52)
       offset_top = 0;
-      }
+      
+      
+      // Currently culling support for Safari, as there are quite a few bugs that need to be worked out
+      var isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
+      if (isSafari) return;
      
      var directions = {
      up: 60,
@@ -59,19 +70,22 @@ function createMask(el, direction) {
           return;
       }
       
+    var width = 0,
+        height = 0;
+      
     //SVG generation
     var _svgNS = 'http://www.w3.org/2000/svg';
-    var svg = "<svg width='0' height='0' xmlns='http://www.w3.org/2000/svg' version='1.1'></svg>";
+    var svg = "<svg width='" + width + "' height='" + height + "' shape-rendering='geometricPrecision' viewBox='0 0 " + $this.innerWidth() + " " + $this.innerHeight() + "' xmlns='http://www.w3.org/2000/svg' version='1.1'><defs></defs></svg>";
     
     $this.append(svg);
-    var parent = $this.find('svg').get()[0];
+    var parent = $this.find('svg defs').get()[0];
 
     var clippath = document.createElementNS(_svgNS, 'clipPath');
     clippath.setAttributeNS(null, 'id', 'clip-' + index);
 
     
-   
-    console.log('ITEM ' + index + ': ' + points_string);
+   // Uncomment for debugging points
+    //console.log('ITEM ' + index + ': ' + points_string);
 
     var polygon = document.createElementNS(_svgNS, 'polygon');
     polygon.setAttribute("points", points_string);
